@@ -289,12 +289,9 @@ streamlit run app.py
 
 ## 👥 团队
 
-武汉大学信息管理学院
+**
 
 ## 📞 联系方式
 
-如有问题或建议，请提交 Issue 或 Pull Request。
+暂无
 
----
-
-**武汉大学信息管理学院 · SIM-Chat 智能问答助手**
