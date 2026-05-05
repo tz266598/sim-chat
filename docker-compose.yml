@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  # ChromaDB 向量数据库
+  chromadb:
+    image: chromadb/chroma:0.4.22
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+    environment:
+      - ANONYMIZED_TELEMETRY=false
+    networks:
+      - sim_chat_network
+    restart: unless-stopped
+
+  # 后端 FastAPI 服务
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8000"
+    environment:
+      - MINIMAX_API_KEY=${MINIMAX_API_KEY}
+      - MINIMAX_GROUP_ID=${MINIMAX_GROUP_ID}
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8000
+      - COLLECTION_NAME=sim_chat_docs
+      - TOP_K=5
+    depends_on:
+      - chromadb
+    networks:
+      - sim_chat_network
+    restart: unless-stopped
+
+  # 前端 Streamlit 服务
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"
+    environment:
+      - BACKEND_URL=http://backend:8000
+    depends_on:
+      - backend
+    networks:
+      - sim_chat_network
+    restart: unless-stopped
+
+volumes:
+  chroma_data:
+
+networks:
+  sim_chat_network:
+    driver: bridge

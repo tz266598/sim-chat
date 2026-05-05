@@ -1,0 +1,26 @@
+# ChromaDB 向量数据库配置
+chromadb:
+  image: chromadb/chroma:0.4.22
+  container_name: sim-chat-chromadb
+  ports:
+    - "8000:8000"
+  volumes:
+    - chroma_data:/chroma/chroma
+  environment:
+    - ANONYMIZED_TELEMETRY=false
+  networks:
+    - sim_chat_network
+  restart: unless-stopped
+
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
+    interval: 10s
+    timeout: 5s
+    retries: 5
+
+volumes:
+  chroma_data:
+
+networks:
+  sim_chat_network:
+    driver: bridge
